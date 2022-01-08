@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 public class JpaBasicApplication {
 
@@ -74,14 +73,55 @@ public class JpaBasicApplication {
 
 
             // 영속 상태
-            Member member = em.find(Member.class, 150L);
-            member.setName("AAAAA");
+//            Member member = em.find(Member.class, 150L);
+//            member.setName("AAAAA");
 
 //            em.detach(member);
-            em.clear();
-            Member member2 = em.find(Member.class, 150L);
+//            em.clear();
+//            Member member2 = em.find(Member.class, 150L);
+
+//            Member member = new Member();
+//            member.setId(3L);
+//            member.setUsername("C");
+//            member.setRoleType(RoleType.GUEST);
+//
+//            em.persist(member);
+
+            MemberSequence memberSequence1 = new MemberSequence();
+            memberSequence1.setUsername("seq1");
+
+//            MemberSequence memberSequence2 = new MemberSequence();
+//            memberSequence2.setUsername("seq2");
+//            MemberSequence memberSequence3 = new MemberSequence();
+//            memberSequence3.setUsername("seq3");
+
+            System.out.println("======================================0");
+            em.persist(memberSequence1);
+//            em.persist(memberSequence2);
+//            em.persist(memberSequence3);
+
+            System.out.println("id1="+memberSequence1.getId());
+//            System.out.println("id2="+memberSequence2.getId());
+//            System.out.println("id3="+memberSequence3.getId());
+            System.out.println("======================================1");
+
+
+//            MemberTableGenerator memberTableGenerator = new MemberTableGenerator();
+//            memberTableGenerator.setUsername("DDD");
+//
+//            em.persist(memberTableGenerator);
+
+
+//            MemberIdentity memberIdentity = new MemberIdentity();
+//            memberIdentity.setUsername("name");
+
+//            System.out.println("======================================0");
+//            em.persist(memberIdentity);
+//            System.out.println("id="+memberIdentity.getId());
+//            System.out.println("======================================1");
 
             tx.commit();
+            System.out.println("======================================2");
 
         } catch (Exception e) {
             tx.rollback();
