@@ -125,21 +125,24 @@ public class JpaBasicApplication {
 
             Team team = new Team();
             team.setName("TeamA");
+//            team.getMembers().add(memberLink); // team쪽은 읽기전용이라서 여기서는 member쪽 테이블이 업데이트가 되지 않는다. (member가 연관관계의 주인)
             em.persist(team);
 
             MemberLink memberLink = new MemberLink();
             memberLink.setUsername("Member1");
-            memberLink.setTeam(team);;
+            memberLink.changeTeam(team);
             em.persist(memberLink);
 
-            em.flush();
-            em.clear();
+//            team.getMembers().add(memberLink); // 1차 캐시 영향받는것을 방지하기 위해서는 team쪽에서 추가해주는게 좋다. => member 객체 setter에서 같이 처리해줘도 좋다.
 
-            MemberLink findMember = em.find(MemberLink.class, memberLink.getId());
-            List<MemberLink> members = findMember.getTeam().getMembers();
+//            em.flush();
+//            em.clear();
+
+            Team findTeam = em.find(Team.class, team.getId());
+            List<MemberLink> members = findTeam.getMembers();
 
             for (MemberLink member : members) {
-                System.out.println("member.getUsername() = " + member.getUsername());
+                System.out.println("member = " + member.getUsername());
             }
 
             tx.commit();
