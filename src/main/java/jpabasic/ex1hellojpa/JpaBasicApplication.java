@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaBasicApplication {
 
@@ -135,12 +136,11 @@ public class JpaBasicApplication {
             em.clear();
 
             MemberLink findMember = em.find(MemberLink.class, memberLink.getId());
-            Team findTeam = findMember.getTeam();
+            List<MemberLink> members = findMember.getTeam().getMembers();
 
-            System.out.println("findTeam.getName() = " + findTeam.getName());
-
-            Team newTeam = em.find(Team.class, 100L);
-            findMember.setTeam(newTeam);
+            for (MemberLink member : members) {
+                System.out.println("member.getUsername() = " + member.getUsername());
+            }
 
             tx.commit();
             System.out.println("======================================2");
