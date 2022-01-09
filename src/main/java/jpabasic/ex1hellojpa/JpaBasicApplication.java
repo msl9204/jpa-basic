@@ -120,6 +120,28 @@ public class JpaBasicApplication {
 //            System.out.println("id="+memberIdentity.getId());
 //            System.out.println("======================================1");
 
+
+
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            MemberLink memberLink = new MemberLink();
+            memberLink.setUsername("Member1");
+            memberLink.setTeam(team);;
+            em.persist(memberLink);
+
+            em.flush();
+            em.clear();
+
+            MemberLink findMember = em.find(MemberLink.class, memberLink.getId());
+            Team findTeam = findMember.getTeam();
+
+            System.out.println("findTeam.getName() = " + findTeam.getName());
+
+            Team newTeam = em.find(Team.class, 100L);
+            findMember.setTeam(newTeam);
+
             tx.commit();
             System.out.println("======================================2");
 
