@@ -23,11 +23,7 @@ public class JpaBasicApplication {
 
             em.persist(member);
 
-            Team team = new Team();
-            team.setName("teamA");
-            team.getMembers().add(member);
 
-            em.persist(team);
 
             tx.commit();
             System.out.println("======================================2");
