@@ -24,18 +24,6 @@ public class Member {
     @Embedded
     private Address homeAddress;
 
-    // 임베디드 타입 중복으로 쓸 경우 재정의 필요
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "city",
-                            column = @Column(name = "WORK_CITY")),
-            @AttributeOverride(name = "street",
-                            column = @Column(name = "WORK_STREET")),
-            @AttributeOverride(name = "zipcode",
-                            column = @Column(name = "WORK_ZIPCODE"))
-    })
-    private Address workAddress;
-
     public Long getId() {
         return id;
     }
