@@ -16,43 +16,27 @@ public class JpaMain {
 
         try {
 
-            for (int i = 0; i < 100; i++) {
-                Member member = new Member();
-                member.setUsername("member" + i);
-                member.setAge(i);
-                em.persist(member);
-            }
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member");
+            member.setAge(10);
+
+            member.setTeam(team);
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            List<Member> resultList1 = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                    .setFirstResult(1)
-                    .setMaxResults(10)
+            String query = "select m from Member m left join m.team t on t.name = 'teamA'";
+            List<Member> resultList = em.createQuery(query, Member.class)
                     .getResultList();
 
-            System.out.println("resultList1 = " + resultList1.size());
+            System.out.println("resultList = " + resultList.size());
 
-            for (Member member : resultList1) {
-                System.out.println("member = " + member);
-            }
-
-            List<Member> result = em.createQuery("select m from Member m", Member.class)
-                    .getResultList();
-            Member findMember = result.get(0);
-            findMember.setAge(20);
-
-            List<Team> teams = em.createQuery("select t from Member m join m.team t", Team.class)
-                    .getResultList();
-
-            em.createQuery("select o.address from Order o", Address.class);
-
-            List<MemberDTO> resultList = em.createQuery("select new jpabasic.jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
-                    .getResultList();
-
-            MemberDTO memberDTO = resultList.get(0);
-            System.out.println("memberDTO.getUsername = " + memberDTO.getUsername());
-            System.out.println("memberDTO.getAge = " + memberDTO.getAge());
 
             tx.commit();
             System.out.println("======================================2");
