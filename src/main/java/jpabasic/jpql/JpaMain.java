@@ -21,7 +21,7 @@ public class JpaMain {
             em.persist(team);
 
             Member member = new Member();
-            member.setUsername(null);
+            member.setUsername("관리자A");
             member.setAge(10);
             member.setType(MemberType.ADMIN);
 
@@ -29,30 +29,28 @@ public class JpaMain {
 
             em.persist(member);
 
+            Member member2 = new Member();
+            member2.setUsername("관리자B");
+            member2.setAge(20);
+            member2.setType(MemberType.ADMIN);
+            em.persist(member2);
+
             em.flush();
             em.clear();
 
-            String query = "select " +
-                            "case when m.age <= 10 then '학생요금'" +
-                            "     when m.age >= 60 then '경로요금'" +
-                            "     else '일반요금'" +
-                            "end " +
-                            "from Member m";
+//            String query = "select concat('a', 'b') from Member m";
+//            List<String> result = em.createQuery(query, String.class)
+//                    .getResultList();
+
+            String query = "select function('group_concat', m.username) from Member m";
+
             List<String> result = em.createQuery(query, String.class)
                     .getResultList();
+
 
             for (String s : result) {
                 System.out.println("s = " + s);
             }
-
-
-            String query2 = "select coalesce(m.username, '이름 없는 회원') from Member m";
-            List<String> result2 = em.createQuery(query2, String.class).getResultList();
-
-            for (String s : result2) {
-                System.out.println("s2 = " + s);
-            }
-
 
             tx.commit();
             System.out.println("======================================2");
