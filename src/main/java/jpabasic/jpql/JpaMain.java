@@ -1,6 +1,7 @@
 package jpabasic.jpql;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -38,18 +39,21 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-//            String query = "select concat('a', 'b') from Member m";
-//            List<String> result = em.createQuery(query, String.class)
-//                    .getResultList();
-
-            String query = "select function('group_concat', m.username) from Member m";
-
-            List<String> result = em.createQuery(query, String.class)
+            String query = "select m.team from Member m"; // 묵시적 내부 조인이 발생함. (=안티패턴)
+            List<Team> result = em.createQuery(query, Team.class)
                     .getResultList();
 
+            for (Team team1 : result) {
+                System.out.println("team1 = " + team1);
+            }
 
-            for (String s : result) {
-                System.out.println("s = " + s);
+            String query2 = "select m.username from Team t join t.members m";
+
+            List result2 = em.createQuery(query2, Collection.class)
+                    .getResultList();
+
+            for (Object o : result2) {
+                System.out.println("o = " + o);
             }
 
             tx.commit();
