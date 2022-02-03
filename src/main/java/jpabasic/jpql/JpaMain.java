@@ -43,46 +43,25 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m from Member m join fetch m.team";
-            List<Member> result = em.createQuery(query, Member.class)
+            // 일대다 구조에서 페이징은 뻥튀기가 일어나서 페이징하면 안된다.
+            // 이럴때는 뒤집어서 다대일 구조로 바꾸고 페이징을 해야한다.
+            // 또는 페치 조인 없이 해당 컬렉션에 BatchSize 어노테이션 붙여서 한번에 가져올 수도 있다.
+//            String query = "select t from Team t join fetch t.members m"; -> 일대다 페이징 쿼리
+            String query = "select t from Team t";
+
+            List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
                     .getResultList();
 
-            // fetch join을 하지 않을 시, N+1 문제가 발생!
+            System.out.println("result.size() = " + result.size());
 
-            for (Member m : result) {
-                System.out.println("member = " + m.getUsername() + ", " + m.getTeam().getName());
+            for (Team team : result) {
+                System.out.println("team = " + team + " ," + team.getName());
+                for (Member member1 : team.getMembers()) {
+                    System.out.println("-> member = " + member1);
+                }
             }
-
-            em.flush();
-            em.clear();
-
-
-            // 컬렉션 페치 조인
-            // distinct 사용 시, 애플리케이션 레벨에서 추가로 걸러줌
-            String query2 = "select distinct t from Team t join fetch t.members";
-            List<Team> result2 = em.createQuery(query2, Team.class)
-                    .getResultList();
-
-            System.out.println("result2.size() = " + result2.size());
-
-            for (Team team : result2) {
-                System.out.println("team = " + team.getName() + ", " + team.getMembers().size());
-            }
-
-            em.flush();
-            em.clear();
-
-            // 페치조인과 일반조인의 차이
-            // 일반 조인 실행 시 연관된 엔티티를 함께 조회하지 않음
-
-            String query3 = "select t from Team t join t.members m";
-            List<Team> result3 = em.createQuery(query3, Team.class)
-                    .getResultList();
-
-            for (Team team : result3) {
-                System.out.println("team = " + team.getName() + ", " + team.getMembers().size());
-            }
-
 
             tx.commit();
             System.out.println("======================================2");
