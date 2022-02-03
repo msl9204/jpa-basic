@@ -17,44 +17,72 @@ public class JpaMain {
 
         try {
 
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Team teamA = new Team();
+            teamA.setName("teamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("teamB");
+            em.persist(teamB);
 
             Member member = new Member();
-            member.setUsername("관리자A");
-            member.setAge(10);
-            member.setType(MemberType.ADMIN);
-
-            member.setTeam(team);
-
+            member.setUsername("회원1");
+            member.setTeam(teamA);
             em.persist(member);
 
             Member member2 = new Member();
-            member2.setUsername("관리자B");
-            member2.setAge(20);
-            member2.setType(MemberType.ADMIN);
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-            String query = "select m.team from Member m"; // 묵시적 내부 조인이 발생함. (=안티패턴)
-            List<Team> result = em.createQuery(query, Team.class)
+            String query = "select m from Member m join fetch m.team";
+            List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
 
-            for (Team team1 : result) {
-                System.out.println("team1 = " + team1);
+            // fetch join을 하지 않을 시, N+1 문제가 발생!
+
+            for (Member m : result) {
+                System.out.println("member = " + m.getUsername() + ", " + m.getTeam().getName());
             }
 
-            String query2 = "select m.username from Team t join t.members m";
+            em.flush();
+            em.clear();
 
-            List result2 = em.createQuery(query2, Collection.class)
+
+            // 컬렉션 페치 조인
+            // distinct 사용 시, 애플리케이션 레벨에서 추가로 걸러줌
+            String query2 = "select distinct t from Team t join fetch t.members";
+            List<Team> result2 = em.createQuery(query2, Team.class)
                     .getResultList();
 
-            for (Object o : result2) {
-                System.out.println("o = " + o);
+            System.out.println("result2.size() = " + result2.size());
+
+            for (Team team : result2) {
+                System.out.println("team = " + team.getName() + ", " + team.getMembers().size());
             }
+
+            em.flush();
+            em.clear();
+
+            // 페치조인과 일반조인의 차이
+            // 일반 조인 실행 시 연관된 엔티티를 함께 조회하지 않음
+
+            String query3 = "select t from Team t join t.members m";
+            List<Team> result3 = em.createQuery(query3, Team.class)
+                    .getResultList();
+
+            for (Team team : result3) {
+                System.out.println("team = " + team.getName() + ", " + team.getMembers().size());
+            }
+
 
             tx.commit();
             System.out.println("======================================2");
