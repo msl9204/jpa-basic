@@ -39,16 +39,21 @@ public class JpaMain {
             member3.setTeam(teamB);
             em.persist(member3);
 
-            em.flush();
+            // FLUSH 자동 호출
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+
+            // 벌크 연산 수행 후 영속성 컨텍스트를 초기화 해야한다. (데이터 정합성이 안맞으므로)
             em.clear();
 
-            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
-                    .setParameter("username", "회원1")
-                    .getResultList();
+            Member findMember = em.find(Member.class, member.getId());
 
-            for (Member member1 : resultList) {
-                System.out.println("member1 = " + member1);
-            }
+
+            System.out.println("resultCount = " + resultCount);
+
+
+            System.out.println("findMember.getAge() = " + findMember.getAge());
+
 
             tx.commit();
             System.out.println("======================================2");
