@@ -14,7 +14,6 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
-
         try {
 
             Team teamA = new Team();
@@ -43,32 +42,13 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            // 엔티티 직접 사용 가능
-            String query = "select m from Member m where m = :member";
-
-            Member findMember = em.createQuery(query, Member.class)
-                    .setParameter("member", member)
-                    .getSingleResult();
-
-            System.out.println("findMember = " + findMember);
-
-            String query2 = "select m from Member m where m.id = :memberId";
-
-            Member memberId = em.createQuery(query2, Member.class)
-                    .setParameter("memberId", member.getId())
-                    .getSingleResult();
-
-            System.out.println("memberId = " + memberId);
-
-            // 외래키
-            String query3 = "select m from Member m where m.team = :team";
-
-            List<Member> members = em.createQuery(query3, Member.class)
-                    .setParameter("team", teamA)
+            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+                    .setParameter("username", "회원1")
                     .getResultList();
 
-            System.out.println("members = " + members);
-
+            for (Member member1 : resultList) {
+                System.out.println("member1 = " + member1);
+            }
 
             tx.commit();
             System.out.println("======================================2");
